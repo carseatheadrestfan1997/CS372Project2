@@ -2,9 +2,6 @@
 
 import re
 
-# i forgot regex syntax
-var_assign = re.compile("some pattern for variable assignment")
-type = re.compile("int bool and str")
 # need:
 # int, str, bools
 # var assignment
@@ -16,17 +13,26 @@ type = re.compile("int bool and str")
 # printing
 # cl args
 
-# parse a line and throw things wherever accordingly
-def parse_cmd(cmd):
-    print(cmd)
+def parser(stack, input):
+    command = re.match(r'(insert|othercommandsgorightward)', input)
+    if command:
+        firstArg = command.group(1)
+        if firstArg == 'insert':
+            print("Entered insert")
+        else:
+            print("error")
+    else:
+        print("error")
 
-# interpreter-style
 def main():
-    inp = input("? ")
-    while inp != "exit":
-        parse_cmd(inp)
-        inp = input("? ")
-        
-    
+    #generate stack here so it doesnt fall out of scope obviously
+    stack = []
+    while True:
+        command = input()
+        if command == 'kill':
+            break
+        parser(stack, command)
+
+
 if __name__ == "__main__":
     main()
