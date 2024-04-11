@@ -14,7 +14,7 @@ import re
 # cl args
 
 def parser(stack, input):
-    commandMatcher = re.match(r'(insert|remove|print)', input)
+    commandMatcher = re.match(r'(insert|remove|print|add)', input)
     if commandMatcher:
         firstArg = commandMatcher.group(1)
         if firstArg == 'insert':
@@ -42,6 +42,14 @@ def parser(stack, input):
                 stack.pop()
             else:
                 print("Empty stack error. Can't remove from top of stack")
+        elif firstArg == 'add':
+            if len(stack) >= 2:
+                if (isinstance(stack[-1], int)) and (isinstance(stack[-2], int)):
+                    x = stack.pop()
+                    y = stack.pop()
+                    stack.append(x + y)
+                else:
+                    print("The two values on the top of the stack are not integers!")
         else:
             print("Error, not a valid command (succeeded command matcher, failed to find if block for command.) Make sure to remove it from the matcher if it has not been implemented, as this is the only time this really long print statement will run!")
     else:
