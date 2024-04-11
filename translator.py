@@ -14,15 +14,38 @@ import re
 # cl args
 
 def parser(stack, input):
-    command = re.match(r'(insert|othercommandsgorightward)', input)
-    if command:
-        firstArg = command.group(1)
+    commandMatcher = re.match(r'(insert|remove|print)', input)
+    if commandMatcher:
+        firstArg = commandMatcher.group(1)
         if firstArg == 'insert':
-            print("Entered insert")
+            valueMatcher = re.match(r'insert (\d+|true|false|"[^"]*")', input)
+            if valueMatcher:
+                value = valueMatcher.group(1)
+                # INTEGER Support
+                if value.isdigit():
+                    stack.append(int(value))
+                # BOOLEAN Support
+                elif value == 'true' or value == 'false':
+                    stack.append(value == 'true')
+                # STRING Support
+                else:
+                    stack.append(value.strip('"'))
+            else:
+                print("insert command contains nothing valid")
+        elif firstArg == 'print':
+            if stack:
+                print(stack[-1])
+            else:
+                print("Empty STACK ERROR")
+        elif firstArg == 'remove':
+            if stack:
+                stack.pop()
+            else:
+                print("Empty stack error. Can't remove from top of stack")
         else:
-            print("error")
+            print("Error, not a valid command (succeeded command matcher, failed to find if block for command.) Make sure to remove it from the matcher if it has not been implemented, as this is the only time this really long print statement will run!")
     else:
-        print("error")
+        print("error, not a valid command (failed command matcher)")
 
 def main():
     #generate stack here so it doesnt fall out of scope obviously
