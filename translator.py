@@ -13,7 +13,7 @@ import re
 ### printing
 # cl args
 
-import re
+
 def handle_insert(stack, variables, command, translated, indented_line):
     value_matcher = re.match(r'insert (\d+|true|false|"[^"]*"|\w+)', command)
     if value_matcher:
@@ -36,6 +36,7 @@ def handle_insert(stack, variables, command, translated, indented_line):
             print("insert error")
     else:
         print("INSERT FAILED")
+
 def handle_print(stack, variables, command, translated, indented_line):
     print_matcher = re.match(r'print (\w+)', command)
     if print_matcher:
@@ -50,12 +51,14 @@ def handle_print(stack, variables, command, translated, indented_line):
         translated.append(indented_line + "print(stack[-1])")
     else:
         print("EMPTY STACK")
+
 def handle_remove(stack, translated, indented_line):
     if stack:
         stack.pop()
         translated.append(indented_line + "stack.pop()")
     else:
         print("EMPTY STACK")
+
 def handle_assign(stack, variables, command, translated, indented_line):
     assign_matcher = re.match(r'assign (\w+)', command)
     if assign_matcher and stack:
@@ -65,6 +68,7 @@ def handle_assign(stack, variables, command, translated, indented_line):
         translated.append(indented_line + f"{variable_name} = stack.pop()")
     else:
         print("CANNOT ASSIGN TO VARIABLE")
+
 def handle_and(stack, translated, indented_line):
     if len(stack) >= 2:
         a = stack.pop()
@@ -76,6 +80,7 @@ def handle_and(stack, translated, indented_line):
         translated.append(indented_line + "stack.append(a and b)")
     else:
         print("Not enough elements")
+
 def handle_or(stack, translated, indented_line):
     if len(stack) >= 2:
         a = stack.pop()
@@ -87,6 +92,7 @@ def handle_or(stack, translated, indented_line):
         translated.append(indented_line + "stack.append(a or b)")
     else:
         print("or error")
+
 def handle_not(stack, translated, indented_line):
     if stack:
         a = stack.pop()
@@ -96,28 +102,34 @@ def handle_not(stack, translated, indented_line):
         translated.append(indented_line + "stack.append(not a)")
     else:
         print("empty stack")
+
 #!!!NEED TO CHECK TYPES OF THE THINGS AT TOP OF STACK WITH ISINSTANCE
 def arithmetic_operations(stack, variables, operation, command, translated, indented_line):
     if len(stack) < 2:
         print(f"There must be atleast 2 values on the stack for {operation}")
         return
+    
     b = stack.pop()
     a = stack.pop()
+
     if operation == 'add':
         result = a + b
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a + b)")
+    
     elif operation == 'subtract':
         result = a - b
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a - b)")
+    
     elif operation == 'multiply':
         result = a * b
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a * b)")
+    
     elif operation == 'divide':
         if b == 0:
             print("cannot divide by zero")
@@ -128,6 +140,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a / b)")
+    
     elif operation == 'modulus':
         if b == 0:
             print("canont mod by zero")
@@ -138,16 +151,19 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a % b)")
+    
     elif operation == 'equalto':
         result = a == b
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a == b)")
+    
     elif operation == 'lessthan':
         result = a < b
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a < b)")
+    
     elif operation == 'greaterthan':
         result = a > b
         translated.append(indented_line + "b = stack.pop()")
@@ -155,6 +171,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         translated.append(indented_line + "stack.append(a > b)")
         result
     stack.append(result)
+
 def parser(stack, variables, command, translated, indent=0):
     indented_line = "    " * indent
     command_matcher = re.match(r'(print|insert|remove|add|assign|and|or|not|subtract|multiply|divide|modulus|greaterthan|lessthan|equalto)', command)
@@ -200,6 +217,7 @@ def execute_commands(stack, variables, commands, translated, indent=0):
     while i < len(commands):
         command = commands[i]
         loop_match = loop_command_pattern.match(command)
+        
         if loop_match:
             loop_count_expr = loop_match.group(1)
             if loop_count_expr.isdigit():
@@ -209,9 +227,11 @@ def execute_commands(stack, variables, commands, translated, indent=0):
             else:
                 print("Loop count error")
                 return
+            
             loop_commands = []
             loop_level = 1
             i += 1
+            
             while i < len(commands) and loop_level > 0:
                 if endloop_pattern.match(commands[i]):
                     loop_level -= 1
@@ -226,12 +246,14 @@ def execute_commands(stack, variables, commands, translated, indent=0):
             # Iterator
             for _ in range(count - 1):
                 execute_commands(stack, variables, loop_commands, [], indent + 1)
+
         elif endloop_pattern.match(command):
             print("Bad 'endloop' location.")
             return
         else:
             parser(stack, variables, command, translated, indent)
         i += 1
+
 #!!!NEED TO CHECK THE VALIDITY OF COMMANDS WHILE "STUCK" IN A FOR LOOP 
 #!!!SHOULD NOT BE HARD. USE REGEX
 def main():
@@ -245,31 +267,36 @@ def main():
     translated = ["stack = []\n"]
     print("Live interaction mode... Type kill to end")
     while True:
-        command = input("------![STACK BASED LANGUAGE]!------\n")
-        if command == 'kill':
-            print("-------------THE SCRIPT-------------\n")
-            print("\n".join(translated))
-            break
-        commands.append(command)
-        loop_present = False
-        for cmd in commands:
-            if cmd.startswith("loop"):
-                loop_present = True
+        try:
+            command = input("------![STACK BASED LANGUAGE]!------\n")
+            if command == 'kill':
+                print("-------------THE SCRIPT-------------\n")
+                print("\n".join(translated))
                 break
-        if command == 'endloop':
-            print(commands)
-            loop_count = 0
+            commands.append(command)
+            loop_present = False
             for cmd in commands:
                 if cmd.startswith("loop"):
-                    loop_count += 1
-                elif cmd == "endloop":
-                    loop_count -= 1
-            if loop_count == 0:
-                execute_commands(stack, variables, commands, translated)
-                commands = []
-        elif not loop_present:
-            parser(stack, variables, command, translated)
-            commands.pop(0)
+                    loop_present = True
+                    break
+            if command == 'endloop':
+                print(commands)
+                loop_count = 0
+                for cmd in commands:
+                    if cmd.startswith("loop"):
+                        loop_count += 1
+                    elif cmd == "endloop":
+                        loop_count -= 1
+                if loop_count == 0:
+                    execute_commands(stack, variables, commands, translated)
+                    commands = []
+            elif not loop_present:
+                parser(stack, variables, command, translated)
+                commands.pop(0)
+        except EOFError:
+            print("EOF")
+            break
+
 if __name__ == "__main__":
     main()
 
