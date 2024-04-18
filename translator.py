@@ -1,7 +1,7 @@
 # translates whatever this language is called into python
 
 import re
-
+import sys
 # need:
 ### int, str, bools 
 ### var assignment
@@ -13,7 +13,7 @@ import re
 ### printing
 # cl args
 
-
+#
 def handle_insert(stack, variables, command, translated, indented_line):
     value_matcher = re.match(r'insert (\d+|true|false|"[^"]*"|\w+)', command)
     if value_matcher:
@@ -42,12 +42,12 @@ def handle_print(stack, variables, command, translated, indented_line):
     if print_matcher:
         variable_name = print_matcher.group(1)
         if variable_name in variables:
-            print(variables[variable_name])
+            print('#', variables[variable_name])
             translated.append(indented_line + f"print({variable_name})")
         else:
             print("variable not found")
     elif stack:
-        print(stack[-1])
+        print('#', stack[-1])
         translated.append(indented_line + "print(stack[-1])")
     else:
         print("EMPTY STACK")
@@ -262,15 +262,34 @@ def main():
     # dictionary of variables so our language can support var assignment.
     # to make it interesting you can only retrieve variables with insert (var name) and assign variables with assign (var_name)
     variables = {} 
-    
     commands = []
+    filecommands = []
     translated = ["stack = []\n"]
-    print("Live interaction mode... Type kill to end")
+    livemode = False
+    if len(sys.argv) == 1:
+        livemode = True
+    elif len(sys.argv) != 2:
+        sys.exit(1)
+    if not livemode:
+        try:
+            file = open(sys.argv[1], 'r')
+            for line in file:
+                filecommands.append(line.strip())
+        except OSError as e:
+            print(e)
+            sys.exit(1)
+        
     while True:
         try:
-            command = input("------![STACK BASED LANGUAGE]!------\n")
+            if livemode:
+                command = input("#live mode\n")
+            else:
+                if filecommands:
+                    command = filecommands.pop(0)
+                else:
+                    command = "kill"
             if command == 'kill':
-                print("-------------THE SCRIPT-------------\n")
+                print("#-------------THE SCRIPT-------------\n")
                 print("\n".join(translated))
                 break
             commands.append(command)
@@ -280,7 +299,7 @@ def main():
                     loop_present = True
                     break
             if command == 'endloop':
-                print(commands)
+                #print(commands)
                 loop_count = 0
                 for cmd in commands:
                     if cmd.startswith("loop"):
@@ -294,7 +313,8 @@ def main():
                 parser(stack, variables, command, translated)
                 commands.pop(0)
         except EOFError:
-            print("EOF")
+            print("-------------THE SCRIPT-------------\n")
+            print("\n".join(translated))
             break
 
 if __name__ == "__main__":
