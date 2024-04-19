@@ -5,6 +5,10 @@ A rudimentary stack-based programming language.
 
 Does not yet support oneliners, gotta do a single command per line.
 
+To use, just call Python normally. For example, on Windows:
+- python translator.py to use the interactive live shell, or
+- python translator.py <filename> to read a file and output results to outputfile.py
+
 Basic syntax:
 - insert <value> : push a value onto the stack
 - assign <variable> : assign a variable to the top item on the stack
