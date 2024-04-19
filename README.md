@@ -2,6 +2,7 @@
 project for CSC372
 
 A rudimentary stack-based programming language.
+
 Does not yet support oneliners, gotta do a single command per line.
 
 Basic syntax:
@@ -15,12 +16,21 @@ Basic syntax:
 - endloop : marks the end of a loop block
 
 Example program:
+
 insert 5
+
 assign x
+
 loop 5
+
 insert x
+
 insert 5
+
 add
+
 assign x
+
 endloop
+
 print x
