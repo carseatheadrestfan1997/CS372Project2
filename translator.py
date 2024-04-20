@@ -8,12 +8,10 @@ import sys
 ### math
 ### bool expressions (AND, OR, NOT)
 ### comparison
-# conditionals
+## conditionals (kind of implemented. Basic if statement functioning)
 ### loops
 ### printing
 # cl args
-
-#
 def handle_insert(stack, variables, command, translated, indented_line):
     value_matcher = re.match(r'insert (\d+|true|false|"[^"]*"|\w+)', command)
     if value_matcher:
@@ -172,9 +170,18 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         result
     stack.append(result)
 
+# basic if statement. Will try to expand for elif else. 
+def handle_if(stack, variables, command, translated, indent):
+    if_match = re.match(r'^if \((.*)\)$', command)
+    if if_match:
+        inner_commands = if_match.group(1).split(',')
+        translated.append("    " * indent + "if stack.pop():")
+        for cmd in inner_commands:
+            parser(stack, variables, cmd.strip(), translated, indent + 1)
+
 def parser(stack, variables, command, translated, indent=0):
     indented_line = "    " * indent
-    command_matcher = re.match(r'(print|insert|remove|add|assign|and|or|not|subtract|multiply|divide|modulus|greaterthan|lessthan|equalto)', command)
+    command_matcher = re.match(r'(if|print|insert|remove|add|assign|and|or|not|subtract|multiply|divide|modulus|greaterthan|lessthan|equalto)', command)
     if command_matcher:
         first_arg = command_matcher.group(1)
         if first_arg == 'insert':
@@ -207,6 +214,8 @@ def parser(stack, variables, command, translated, indent=0):
             handle_or(stack, translated, indented_line)
         elif first_arg == 'not':
             handle_not(stack, translated, indented_line)
+        elif first_arg == 'if':
+            handle_if(stack, variables, command, translated, indent)
     else:
         print("NOT A VALID COMMAND")
 
@@ -264,6 +273,7 @@ def main():
     variables = {} 
     commands = []
     filecommands = []
+    ifstatementhandling = []
     translated = ["stack = []\n"]
     livemode = False
     if len(sys.argv) == 1:
