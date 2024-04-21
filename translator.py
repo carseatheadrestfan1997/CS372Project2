@@ -206,14 +206,20 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         stack.append(result)
 
 # basic if statement. Will try to expand for elif else. 
-def handle_if(stack, variables, command, translated, indent):
+def handle_if(stack, variables, command, translated, indent, runcommand):
     if_match = re.match(r'^if \((.*)\)$', command)
     if if_match:
-        inner_commands = if_match.group(1).split(',')
         translated.append("    " * indent + "if stack.pop():")
-        runcommand = stack.pop()
+    if if_match and not runcommand:
+        inner_commands = if_match.group(1).split(',')
         for cmd in inner_commands:
             parser(stack, variables, cmd.strip(), translated, indent + 1, runcommand)
+    # run in live mode
+    elif if_match and runcommand:
+        inner_commands = if_match.group(1).split(',')
+        run = stack.pop()
+        for cmd in inner_commands:
+            parser(stack, variables, cmd.strip(), translated, indent + 1, run)
             
 
 def parser(stack, variables, command, translated, indent=0, runcommand=True):
@@ -252,11 +258,11 @@ def parser(stack, variables, command, translated, indent=0, runcommand=True):
         elif first_arg == 'not':
             handle_not(stack, translated, indented_line, runcommand)
         elif first_arg == 'if':
-            handle_if(stack, variables, command, translated, indent)
+            handle_if(stack, variables, command, translated, indent, runcommand)
     else:
         print("NOT A VALID COMMAND")
 
-def execute_commands(stack, variables, commands, translated, indent=0):
+def execute_commands(stack, variables, commands, translated, indent=0, runcommand = True):
     i = 0
     loop_command_pattern = re.compile(r'^loop (\d+|\w+)$')
     endloop_pattern = re.compile(r'^endloop$')
@@ -288,16 +294,16 @@ def execute_commands(stack, variables, commands, translated, indent=0):
                 i += 1
             
             translated.append("    " * indent + f"for _ in range({count}):")
-            execute_commands(stack, variables, loop_commands, translated, indent + 1)
+            execute_commands(stack, variables, loop_commands, translated, indent + 1, runcommand)
             # Iterator
             for _ in range(count - 1):
-                execute_commands(stack, variables, loop_commands, [], indent + 1)
+                execute_commands(stack, variables, loop_commands, [], indent + 1, runcommand)
 
         elif endloop_pattern.match(command):
             print("Bad 'endloop' location.")
             return
         else:
-            parser(stack, variables, command, translated, indent, True)
+            parser(stack, variables, command, translated, indent, runcommand)
         i += 1
 
 #!!!NEED TO CHECK THE VALIDITY OF COMMANDS WHILE "STUCK" IN A FOR LOOP 
@@ -354,10 +360,10 @@ def main():
                     elif cmd == "endloop":
                         loop_count -= 1
                 if loop_count == 0:
-                    execute_commands(stack, variables, commands, translated)
+                    execute_commands(stack, variables, commands, translated, 0, livemode)
                     commands = []
             elif not loop_present:
-                parser(stack, variables, command, translated)
+                parser(stack, variables, command, translated, 0, livemode)
                 commands.pop(0)
         except EOFError:
             print("-------------THE SCRIPT-------------\n")

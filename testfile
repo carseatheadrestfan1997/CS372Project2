@@ -2,3 +2,12 @@ insert 1
 insert 2
 add
 print
+loop 25
+loop 25
+print
+endloop
+endloop
+insert true
+if (insert 7, print)
+insert false
+if (insert 8, print)
