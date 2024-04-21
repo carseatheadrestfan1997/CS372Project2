@@ -5,6 +5,8 @@ A rudimentary stack-based programming language.
 
 Does not yet support oneliners, gotta do a single command per line.
 
+Does not yet support conditionals, functions.
+
 Basic syntax:
 - insert <value> : push a value onto the stack
 - assign <variable> : assign a variable to the top item on the stack
