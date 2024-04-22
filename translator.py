@@ -321,8 +321,6 @@ def main():
     livemode = False
     if len(sys.argv) == 1:
         livemode = True
-    elif len(sys.argv) != 2:
-        sys.exit(1)
     if not livemode:
         try:
             file = open(sys.argv[1], 'r')
@@ -331,7 +329,12 @@ def main():
         except OSError as e:
             print(e)
             sys.exit(1)
-        
+    # command line arguments. Only works not in livemode.
+    if len(sys.argv) > 2 and not livemode:
+        for i in range(2, len(sys.argv)):
+            variable_name = f'arg{i - 1}'
+            variables[variable_name] = sys.argv[i]  
+            translated.append(f"{variable_name} = {sys.argv[i]}")
     while True:
         try:
             if livemode:
