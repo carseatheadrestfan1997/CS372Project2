@@ -321,7 +321,7 @@ def parser(stack, variables, command, translated, indent=0, runcommand=True):
             handle_if(stack, variables, command, translated, indent, runcommand)
     else:
         # print("NOT A VALID COMMAND")
-        suicide(f"Syntax error: command \"{command}\" is invalid.", stack, translated, explode=not runcommand)
+        suicide(f"Syntax error: command \"{command}\" is invalid.", stack, translated, kill=not runcommand)
 
 def execute_commands(stack, variables, commands, translated, indent=0, runcommand=True):
     i = 0
@@ -374,9 +374,9 @@ def execute_commands(stack, variables, commands, translated, indent=0, runcomman
 
 # rudimentary kill function for when things go bad
 # by default, does not kill the script
-def suicide(errormsg, stack, translated, explode=False):
+def suicide(errormsg, stack, translated, kill=False):
     print(errormsg)
-    if explode:
+    if kill:
         print(f"Last stack:\n{stack}\n")
         print(f"Script up to this point:\n{"\n".join(translated)}")
         sys.exit()
