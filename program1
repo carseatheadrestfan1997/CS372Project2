@@ -1,0 +1,36 @@
+insert arg1
+insert arg2
+greaterthan
+if (insert arg1, insert "MAX:", print, remove, print, remove)
+insert arg2
+insert arg1
+greaterthan
+if (insert arg2, insert "MAX:", print, remove, print, remove)
+insert arg2
+insert arg1
+equalto 
+if (insert arg1, insert "EQUAL MAXES:", print, remove, print, remove)
+insert arg1
+insert arg2
+add
+insert "SUM:"
+print
+remove
+print
+remove
+insert arg1
+insert arg2
+subtract
+insert "DIFF:"
+print
+remove
+print
+remove
+insert arg1
+insert arg2
+multiply
+insert "PRODUCT:"
+print
+remove
+print
+remove
