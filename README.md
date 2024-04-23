@@ -6,22 +6,22 @@ Does not yet support oneliners, gotta do a single command per line.
 
 To use, just call Python normally. For example, on Windows:
 - python translator.py to use the interactive live shell, or
-- python translator.py <filename> to read a file
+- python translator.py \<filename> to read a file
 
 Both output the resulting script to stdout, redirect accordingly.
 
 Basic syntax:
-- insert <value> : push a value onto the stack
-- assign <variable> : assign a variable to the top item on the stack
+- insert \<value> : push a value onto the stack
+- assign \<variable> : assign a variable to the top item on the stack
 - print : prints the top item on the stack
-- print <variable> : prints a variable
+- print \<variable> : prints a variable
 - add/subtract/multiply/divide/modulus : pops the top two items, performs an arithmetic operation, pushes the result.
 - equalto/lessthan/greaterthan : pops the top two items, performs a comparison, and pushes a boolean.
 - and/or : pops the top two items, performs a boolean comparison, and pushes the result.
 - not : pops the top element and pushes its boolean negation.
-- loop <int> : loops for int times. int can be a variable assigned to an integer.
+- loop \<int> : loops for int times. int can be a variable assigned to an integer.
 - endloop : marks the end of a loop block
-- if (<expression1>, <expression2>,...) : evaluates the contained expressions if the top item on the stack evaluates to true
+- if (\<expression1>, \<expression2>,...) : evaluates the contained expressions if the top item on the stack evaluates to true
 
 Example program:
 
