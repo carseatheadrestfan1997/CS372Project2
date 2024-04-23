@@ -3,7 +3,7 @@
 import re
 import sys
 # need:
-### int, str, bools 
+### int, str, bools
 ### var assignment
 ### math
 ### bool expressions (AND, OR, NOT)
@@ -138,33 +138,51 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
 
     if operation == 'add':
         if runcommand:
-            result = a + b
+            # result = a + b
+            try:
+                result = a + b
+            except TypeError:
+                suicide(stack, translated, "TypeError: incompatible types for add operation.")
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a + b)")
     
     elif operation == 'subtract':
         if runcommand:
-            result = a - b
+            # result = a - b
+            try:
+                result = a - b
+            except TypeError:
+                suicide(stack, translated, "TypeError: incompatible types for subtract operation.")
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a - b)")
     
     elif operation == 'multiply':
         if runcommand:
-            result = a * b
+            # result = a * b
+            try:
+                result = a * b
+            except TypeError:
+                suicide(stack, translated, "TypeError: incompatible types for multiply operation.")
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a * b)")
     
     elif operation == 'divide':
         if runcommand:
+            # if b == 0:
+            #     print("cannot divide by zero")
+            #     stack.append(a)
+            #     stack.append(b)
+            #     return
+            # result = a / b
             if b == 0:
-                print("cannot divide by zero")
-                stack.append(a)
-                stack.append(b)
-                return
-            result = a / b
+                suicide(stack, translated, "Undefined: divide by zero.")
+            try:
+                result = a / b
+            except TypeError:
+                suicide(stack, translated, "TypeError: incompatible types for divide operation.")
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a / b)")
@@ -172,13 +190,18 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
     elif operation == 'modulus':
     
         if runcommand and b == 0:
-            print("canont mod by zero")
-            if runcommand:
-                stack.append(a)
-                stack.append(b)
-            return
+            # print("canont mod by zero")
+            # if runcommand:
+            #     stack.append(a)
+            #     stack.append(b)
+            # return
+            suicide(stack, translated, "Undefined: modulus by zero.")
         if runcommand:
-            result = a % b
+            # result = a % b
+            try:
+                result = a % b
+            except TypeError:
+                suicide(stack, translated, "TypeError: incompatible types for modulus operation.")
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "stack.append(a % b)")
@@ -313,6 +336,12 @@ def execute_commands(stack, variables, commands, translated, indent=0, runcomman
             parser(stack, variables, command, translated, indent, runcommand)
         i += 1
 
+# rudimentary kill function for when things go bad
+def suicide(stack, translated, errormsg):
+    print(errormsg)
+    print(f"Last stack:\n{stack}\n")
+    print(f"Script up to this point:\n{"\n".join(translated)}")
+    sys.exit()
 
 #!!!NEED TO CHECK THE VALIDITY OF COMMANDS WHILE "STUCK" IN A FOR LOOP 
 #!!!SHOULD NOT BE HARD. USE REGEX
