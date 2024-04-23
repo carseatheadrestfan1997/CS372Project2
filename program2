@@ -1,0 +1,43 @@
+insert 1
+assign i
+loop arg2
+insert i
+insert arg1
+greaterthan
+if (insert "*", insert i, multiply, print, remove)
+insert i
+insert arg1
+equalto
+if (insert "*", insert i, multiply, print, remove)
+insert i
+insert 1
+add
+assign i
+endloop
+insert 0
+assign sum_of_multiples
+insert 1
+assign multiple_by_factor
+loop arg3
+insert arg1
+insert multiple_by_factor
+multiply
+assign arg1currentmultiple
+insert arg1currentmultiple
+insert arg3
+lessthan
+if (insert sum_of_multiples, insert arg1currentmultiple, add, assign sum_of_multiples)
+insert arg2
+insert multiple_by_factor
+multiply
+assign arg2currentmultiple
+insert arg2currentmultiple
+insert arg3
+lessthan
+if (insert sum_of_multiples, insert arg2currentmultiple, add, assign sum_of_multiples)
+insert 1
+insert multiple_by_factor
+add
+assign multiple_by_factor
+endloop
+print sum_of_multiples

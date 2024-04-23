@@ -34,6 +34,8 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
             if runcommand:
                 stack.append(variables[value])
             translated.append(indented_line + f"stack.append({value})")
+        elif not runcommand:
+            translated.append(indented_line + f"stack.append({value})")
         else:
             if runcommand:
                 print("insert error")
@@ -262,7 +264,7 @@ def parser(stack, variables, command, translated, indent=0, runcommand=True):
     else:
         print("NOT A VALID COMMAND")
 
-def execute_commands(stack, variables, commands, translated, indent=0, runcommand = True):
+def execute_commands(stack, variables, commands, translated, indent=0, runcommand=True):
     i = 0
     loop_command_pattern = re.compile(r'^loop (\d+|\w+)$')
     endloop_pattern = re.compile(r'^endloop$')
@@ -277,13 +279,18 @@ def execute_commands(stack, variables, commands, translated, indent=0, runcomman
             elif loop_count_expr in variables and isinstance(variables[loop_count_expr], int):
                 count = variables[loop_count_expr]
             else:
-                print("Loop count error")
-                return
-            
+                if loop_count_expr in variables:
+                    try:
+                        count = int(variables[loop_count_expr])
+                    except ValueError:
+                        print(f"Loop count variable '{loop_count_expr}' is not an integer")
+                        return
+                else:
+                    print(f"Loop count variable '{loop_count_expr}' not found")
+                    return    
             loop_commands = []
             loop_level = 1
             i += 1
-            
             while i < len(commands) and loop_level > 0:
                 if endloop_pattern.match(commands[i]):
                     loop_level -= 1
@@ -305,6 +312,7 @@ def execute_commands(stack, variables, commands, translated, indent=0, runcomman
         else:
             parser(stack, variables, command, translated, indent, runcommand)
         i += 1
+
 
 #!!!NEED TO CHECK THE VALIDITY OF COMMANDS WHILE "STUCK" IN A FOR LOOP 
 #!!!SHOULD NOT BE HARD. USE REGEX
