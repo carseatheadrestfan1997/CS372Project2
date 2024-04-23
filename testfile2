@@ -1,0 +1,4 @@
+insert 5
+insert "a"
+add
+print
