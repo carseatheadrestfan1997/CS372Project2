@@ -32,10 +32,10 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
             translated.append(indented_line + f"stack.append({value})")
         else:
             if runcommand:
-                suicide(f"Insertion error for value {value}.", stack, translated)
+                throw_error(f"Insertion error for value {value}.", stack, translated)
     else:
         if runcommand:
-            suicide(f"Insertion error.", stack, translated)
+            throw_error(f"Insertion error.", stack, translated)
 
 def handle_print(stack, variables, command, translated, indented_line, runcommand):
     print_matcher = re.match(r'print (\w+)', command)
@@ -47,7 +47,7 @@ def handle_print(stack, variables, command, translated, indented_line, runcomman
                 print('#', variables[variable_name])
         else:
             if runcommand:
-                suicide(f"Variable {variable_name} not found.", stack, translated)
+                throw_error(f"Variable {variable_name} not found.", stack, translated)
     elif stack:
         translated.append(indented_line + "print(stack[-1])")
         if runcommand:
@@ -71,7 +71,7 @@ def handle_assign(stack, variables, command, translated, indented_line, runcomma
     if assign_matcher:
         variable_name = assign_matcher.group(1)
         if variable_name.isdigit():
-            suicide(f"Cannot assign an integer ({variable_name}) as a variable.", stack, translated)
+            throw_error(f"Cannot assign an integer ({variable_name}) as a variable.", stack, translated)
             return
         if runcommand and stack:
             value = stack.pop()
@@ -95,7 +95,7 @@ def handle_and(stack, translated, indented_line, runcommand):
         result = a and b
         stack.append(result)
     else:
-        suicide("and error: empty or insufficient stack.", stack, translated)
+        throw_error("and error: empty or insufficient stack.", stack, translated)
 
 def handle_or(stack, translated, indented_line, runcommand):
     translated.append(indented_line + "a = stack.pop()")
@@ -109,7 +109,7 @@ def handle_or(stack, translated, indented_line, runcommand):
         result = a or b
         stack.append(result)
     else:
-        suicide("or error: empty or insufficient stack.", stack, translated)
+        throw_error("or error: empty or insufficient stack.", stack, translated)
 
 def handle_not(stack, translated, indented_line, runcommand):
     translated.append(indented_line + "a = stack.pop()")
@@ -121,13 +121,13 @@ def handle_not(stack, translated, indented_line, runcommand):
         result = not a
         stack.append(result)
     else:
-        suicide("not error: empty stack.", stack, translated)
+        throw_error("not error: empty stack.", stack, translated)
 
 #!!!NEED TO CHECK TYPES OF THE THINGS AT TOP OF STACK WITH ISINSTANCE
 def arithmetic_operations(stack, variables, operation, command, translated, indented_line, runcommand):
     if runcommand:
         if len(stack) < 2:
-            suicide(f"Command error: there must be at least two values on the stack for {operation}", stack, translated)
+            throw_error(f"Command error: there must be at least two values on the stack for {operation}", stack, translated)
             return
         else:
             b = stack.pop()
@@ -141,7 +141,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a), type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a), type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -155,7 +155,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a), type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a), type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -169,7 +169,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -186,14 +186,14 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             if b == 0:
                 stack.append(a)
                 stack.append(b)
-                suicide("Undefined: divide by zero.", stack, translated)
+                throw_error("Undefined: divide by zero.", stack, translated)
                 return
             try:
                 result = a / b
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -209,7 +209,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             # return
             stack.append(a)
             stack.append(b)
-            suicide("Undefined: modulus by zero.", stack, translated)
+            throw_error("Undefined: modulus by zero.", stack, translated)
         if runcommand:
             # result = a % b
             try:
@@ -217,7 +217,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -230,7 +230,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -243,7 +243,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -256,7 +256,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             except TypeError:
                 stack.append(a)
                 stack.append(b)
-                suicide(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
+                throw_error(f"TypeError: incompatible types for {operation} ({type(a)}, {type(b)}).", stack, translated)
                 return
         translated.append(indented_line + "b = stack.pop()")
         translated.append(indented_line + "a = stack.pop()")
@@ -321,7 +321,7 @@ def parser(stack, variables, command, translated, indent=0, runcommand=True):
             handle_if(stack, variables, command, translated, indent, runcommand)
     else:
         # print("NOT A VALID COMMAND")
-        suicide(f"Syntax error: command \"{command}\" is invalid.", stack, translated, kill=not runcommand)
+        throw_error(f"Syntax error: command \"{command}\" is invalid.", stack, translated, kill=not runcommand)
 
 def execute_commands(stack, variables, commands, translated, indent=0, runcommand=True):
     i = 0
@@ -374,11 +374,11 @@ def execute_commands(stack, variables, commands, translated, indent=0, runcomman
 
 # rudimentary kill function for when things go bad
 # by default, does not kill the script
-def suicide(errormsg, stack, translated, kill=False):
+def throw_error(errormsg, stack, translated, kill=False):
     print(errormsg)
     if kill:
         print(f"Last stack:\n{stack}\n")
-        # print(f"Script up to this point:\n{"\n".join(translated)}")
+        print(f"Script up to this point:\n{"\n".join(translated)}")
         sys.exit()
 
 #!!!NEED TO CHECK THE VALIDITY OF COMMANDS WHILE "STUCK" IN A FOR LOOP 
