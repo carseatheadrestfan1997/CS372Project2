@@ -378,7 +378,8 @@ def throw_error(errormsg, stack, translated, kill=False):
     print(errormsg)
     if kill:
         print(f"Last stack:\n{stack}\n")
-        print(f"Script up to this point:\n {"\n".join(translated)}")
+        string = "\n".join(translated)
+        print(f"Script up to this point:\n { string }")
         sys.exit()
 
 #!!!NEED TO CHECK THE VALIDITY OF COMMANDS WHILE "STUCK" IN A FOR LOOP 
