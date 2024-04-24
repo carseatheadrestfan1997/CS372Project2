@@ -47,8 +47,8 @@ def handle_print(stack, variables, command, translated, indented_line, runcomman
         else:
             translated.append(indented_line + f"print({variable_name})")
     elif print_basic_mathcer:
-        translated.append(indented_line + "print(stack[-1])")
         if runcommand and stack:
+            translated.append(indented_line + "print(stack[-1])")
             print('#', stack[-1])
         elif runcommand:
             throw_error("Non-fatal: Empty stack on print.", stack, translated)
@@ -102,9 +102,6 @@ def handle_and(stack, translated, indented_line, runcommand):
         throw_error("AND error: empty or insufficient stack.", stack, translated)
 
 def handle_or(stack, translated, indented_line, runcommand):
-    translated.append(indented_line + "a = stack.pop()")
-    translated.append(indented_line + "b = stack.pop()")
-    translated.append(indented_line + "stack.append(a or b)")
     if not runcommand:
         translated.append(indented_line + "a = stack.pop()")
         translated.append(indented_line + "b = stack.pop()")
@@ -291,7 +288,7 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
             translated.append(indented_line + "a = stack.pop()")
             translated.append(indented_line + "stack.append(a > b)")
     
-    if runcommand and result:
+    if runcommand:
         stack.append(result)
 
 # basic if statement. Will try to expand for elif else. 
