@@ -52,6 +52,8 @@ def handle_print(stack, variables, command, translated, indented_line, runcomman
             print('#', stack[-1])
         elif runcommand:
             throw_error("Non-fatal: Empty stack on print.", stack, translated)
+        else:
+            translated.append(indented_line + "print(stack[-1])")
     else:
         print('#', 'BAD PRINT COMMAND. PRINT OR PRINT (VAR)')
 
