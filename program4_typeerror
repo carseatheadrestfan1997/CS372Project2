@@ -1,4 +1,6 @@
 # parser does not care about potential type errors.
+# be careful!
+
 insert 5
 insert "a"
 add

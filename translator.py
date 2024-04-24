@@ -307,6 +307,8 @@ def handle_if(stack, variables, command, translated, indent, runcommand):
             run = stack.pop()
             for cmd in inner_commands:
                 parser(stack, variables, cmd.strip(), translated, indent + 1, run)
+    else:
+        throw_error(f"Bad if statement {command}", stack, translated, kill=not runcommand)
 
 def extract_commands(command_string):
     pattern = r'(?:[^,(]|\(.*?\))+'
