@@ -15,7 +15,7 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
         elif value in ['true', 'false']:
             if runcommand:
                 stack.append(value == 'true')
-            translated.append(indented_line + f"stack.append({value})")
+            translated.append(indented_line + f"stack.append({value == 'true'})")
         elif value.startswith('"') and value.endswith('"'):
             value = value.strip('"')
             if runcommand:
