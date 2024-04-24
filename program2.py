@@ -4,7 +4,7 @@ stack = []
 
 arg1 = 5
 arg2 = 10
-arg3 = 1500
+arg3 = 15000
 # demonstrate loops, if statments
 # call with 3 command line arguments, all ints
 stack.append(1)
@@ -46,7 +46,7 @@ stack.append(0)
 sum_of_multiples = stack.pop()
 stack.append(1)
 multiple_by_factor = stack.pop()
-for _ in range(1500):
+for _ in range(15000):
     stack.append(arg1)
     stack.append(multiple_by_factor)
     b = stack.pop()

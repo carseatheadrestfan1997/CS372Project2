@@ -36,6 +36,7 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
 
 def handle_print(stack, variables, command, translated, indented_line, runcommand):
     print_matcher = re.match(r'print (\w+)', command)
+    print_basic_mathcer = re.match(r'print', command)
     if print_matcher:
         variable_name = print_matcher.group(1)
         if runcommand and variable_name in variables:
@@ -45,21 +46,22 @@ def handle_print(stack, variables, command, translated, indented_line, runcomman
             throw_error(f"Variable {variable_name} not found.", stack, translated)
         else:
             translated.append(indented_line + f"print({variable_name})")
-    elif stack:
+    elif print_basic_mathcer:
         translated.append(indented_line + "print(stack[-1])")
-        if runcommand:
+        if runcommand and stack:
             print('#', stack[-1])
-    else:
-        translated.append(indented_line + "print(stack[-1])")
-        if runcommand:
+        elif runcommand:
             throw_error("Non-fatal: Empty stack on print.", stack, translated)
+    else:
+        print('#', 'BAD PRINT COMMAND. PRINT OR PRINT (VAR)')
 
 def handle_remove(stack, translated, indented_line, runcommand):
-    translated.append(indented_line + "stack.pop()")
     if not runcommand:
+        translated.append(indented_line + "stack.pop()")
         return
     if stack:
         stack.pop()
+        translated.append(indented_line + "stack.pop()")
     else:
         throw_error("Non-fatal: Empty stack on remove.", stack, translated)
 
@@ -70,27 +72,32 @@ def handle_assign(stack, variables, command, translated, indented_line, runcomma
         if variable_name.isdigit():
             throw_error(f"Cannot assign an integer ({variable_name}) as a variable.", stack, translated, kill=not runcommand)
             return
-        if runcommand and stack:
+        elif runcommand and stack:
             value = stack.pop()
             variables[variable_name] = value
+            translated.append(indented_line + f"{variable_name} = stack.pop()")
         elif runcommand:
             throw_error("Cannot assign to variable.", stack, translated, kill=not runcommand)
-        translated.append(indented_line + f"{variable_name} = stack.pop()")
+        else:
+            translated.append(indented_line + f"{variable_name} = stack.pop()")
     else:
         if runcommand:
             throw_error("Cannot assign to variable.", stack, translated, kill=not runcommand)
 
 def handle_and(stack, translated, indented_line, runcommand):
-    translated.append(indented_line + "a = stack.pop()")
-    translated.append(indented_line + "b = stack.pop()")
-    translated.append(indented_line + "stack.append(a and b)")
     if not runcommand:
+        translated.append(indented_line + "a = stack.pop()")
+        translated.append(indented_line + "b = stack.pop()")
+        translated.append(indented_line + "stack.append(a and b)")
         return
     if len(stack) >= 2:
         a = stack.pop()
         b = stack.pop()
         result = a and b
         stack.append(result)
+        translated.append(indented_line + "a = stack.pop()")
+        translated.append(indented_line + "b = stack.pop()")
+        translated.append(indented_line + "stack.append(a and b)")
     else:
         throw_error("AND error: empty or insufficient stack.", stack, translated)
 
@@ -99,24 +106,32 @@ def handle_or(stack, translated, indented_line, runcommand):
     translated.append(indented_line + "b = stack.pop()")
     translated.append(indented_line + "stack.append(a or b)")
     if not runcommand:
+        translated.append(indented_line + "a = stack.pop()")
+        translated.append(indented_line + "b = stack.pop()")
+        translated.append(indented_line + "stack.append(a or b)")
         return
     if len(stack) >= 2:
         a = stack.pop()
         b = stack.pop()
         result = a or b
         stack.append(result)
+        translated.append(indented_line + "a = stack.pop()")
+        translated.append(indented_line + "b = stack.pop()")
+        translated.append(indented_line + "stack.append(a or b)")
     else:
         throw_error("OR error: empty or insufficient stack.", stack, translated)
 
 def handle_not(stack, translated, indented_line, runcommand):
-    translated.append(indented_line + "a = stack.pop()")
-    translated.append(indented_line + "stack.append(not a)")
     if not runcommand:
+        translated.append(indented_line + "a = stack.pop()")
+        translated.append(indented_line + "stack.append(not a)")
         return
     if stack:
         a = stack.pop()
         result = not a
         stack.append(result)
+        translated.append(indented_line + "a = stack.pop()")
+        translated.append(indented_line + "stack.append(not a)")
     else:
         throw_error("NOT error: empty stack.", stack, translated)
 
@@ -134,40 +149,52 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         if runcommand:
             try:
                 result = a + b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a + b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a + b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a + b)")
     
     elif operation == 'subtract':
         if runcommand:
             try:
                 result = a - b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a - b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a - b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a - b)")
     
     elif operation == 'multiply':
         if runcommand:
             try:
                 result = a * b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a * b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a * b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a * b)")
     
     elif operation == 'divide':
         if runcommand:
@@ -178,14 +205,18 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
                 return
             try:
                 result = a / b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a / b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a / b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a / b)")
     
     elif operation == 'modulus':
     
@@ -196,55 +227,71 @@ def arithmetic_operations(stack, variables, operation, command, translated, inde
         if runcommand:
             try:
                 result = a % b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a % b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a % b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a % b)")
     
     elif operation == 'equalto':
         if runcommand:
             try:
                 result = a == b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a == b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a == b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a == b)")
     
     elif operation == 'lessthan':
         if runcommand:
             try:
                 result = a < b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a < b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a < b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a < b)")
     
     elif operation == 'greaterthan':
         if runcommand:
             try:
                 result = a > b
+                translated.append(indented_line + "b = stack.pop()")
+                translated.append(indented_line + "a = stack.pop()")
+                translated.append(indented_line + "stack.append(a > b)")
             except TypeError:
                 stack.append(a)
                 stack.append(b)
                 throw_error(f"TypeError: incompatible types for {operation} {type(a).__name__, type(b).__name__}.", stack, translated)
                 return
-        translated.append(indented_line + "b = stack.pop()")
-        translated.append(indented_line + "a = stack.pop()")
-        translated.append(indented_line + "stack.append(a > b)")
+        else:
+            translated.append(indented_line + "b = stack.pop()")
+            translated.append(indented_line + "a = stack.pop()")
+            translated.append(indented_line + "stack.append(a > b)")
     
-    if runcommand:
+    if runcommand and result:
         stack.append(result)
 
 # basic if statement. Will try to expand for elif else. 
