@@ -1,3 +1,6 @@
+# demonstrate basic insertion, removal, comparisons
+# call with two command line arguments of integers
+
 insert arg1
 insert arg2
 greaterthan

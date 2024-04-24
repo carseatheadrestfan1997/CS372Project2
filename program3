@@ -1,0 +1,26 @@
+# demonstrate basic arithmetic operations
+
+insert 1
+insert 2
+add
+print
+
+insert 10
+insert 5
+divide
+print
+
+insert 10
+insert 5
+modulus
+print
+
+insert 100
+insert 5
+subtract
+print
+
+insert 10
+insert 10
+multiply
+print

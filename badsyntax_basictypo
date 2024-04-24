@@ -1,3 +1,6 @@
+# example of a basic typo syntax error
+# will not be interpreted when provided as a file
+
 insert 1
 inserd 2
 add

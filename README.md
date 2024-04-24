@@ -8,9 +8,15 @@ To use, just call Python normally. For example, on Windows:
 - python translator.py to use the interactive live shell, or
 - python translator.py \<filename> to read a file
 
+To call with command line arguments, simply append them to the end of the above commands, e.g.:
+- python translator.py example-program \<arg1> \<arg2> ...
+
 Both output the resulting script to stdout, redirect accordingly.
 
-Basic syntax:
+Basic syntax/commands:
+- indentation is unimportant when writing a file - the parser will strip it out.
+- comments can be written by preceding a line with "#"
+- one line must be one command
 - insert \<value> : push a value onto the stack
 - assign \<variable> : assign a variable to the top item on the stack
 - print : prints the top item on the stack

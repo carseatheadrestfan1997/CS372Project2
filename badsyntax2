@@ -1,2 +1,7 @@
+# example of a syntax error involving bad variable names (using an integer)
+# will not be interpreted when provided as a file
+
 insert 5
-assign 3
+insert 4
+add
+assign 9
