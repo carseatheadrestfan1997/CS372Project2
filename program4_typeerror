@@ -1,0 +1,5 @@
+# parser does not care about potential type errors.
+insert 5
+insert "a"
+add
+print

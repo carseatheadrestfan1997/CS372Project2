@@ -1,5 +1,7 @@
 # example of a syntax error with by using a bad variable name (previously undefined)
 
 insert 5
+insert 10
+insert 15
 assign varA
 print varB
