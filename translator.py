@@ -71,6 +71,9 @@ def handle_assign(stack, variables, command, translated, indented_line, runcomma
     assign_matcher = re.match(r'assign (\w+)', command)
     if assign_matcher:
         variable_name = assign_matcher.group(1)
+        if variable_name == 'a' or variable_name == 'b':
+            throw_error("Please don't assign 'a' or 'b' as variables, thank you.", stack, translated, kill=not runcommand)
+            return
         if variable_name.isdigit():
             throw_error(f"Cannot assign an integer ({variable_name}) as a variable.", stack, translated, kill=not runcommand)
             return

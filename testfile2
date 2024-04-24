@@ -1,3 +1,5 @@
+# will translate, but fail to run
+
 insert 5
 insert "a"
 add

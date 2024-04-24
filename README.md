@@ -17,7 +17,7 @@ Basic syntax/commands:
 - indentation is unimportant when writing a file - the parser will strip it out.
 - comments can be written by preceding a line with "#"
 - one line must be one command
-- insert \<value> : push a value onto the stack
+- insert \<value> : push a value onto the stack. CANNOT ASSIGN THE VARIABLES "a" or "b" BECAUSE THE BACKEND RELIES ON THESE TWO
 - assign \<variable> : assign a variable to the top item on the stack
 - print : prints the top item on the stack
 - print \<variable> : prints a variable
