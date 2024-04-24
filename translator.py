@@ -17,7 +17,7 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
         elif value in ['true', 'false']:
             if runcommand:
                 stack.append(value == 'true')
-            translated.append(indented_line + f"stack.append({value})")
+            translated.append(indented_line + f"stack.append({value == 'true'})")
         elif value.startswith('"') and value.endswith('"'):
             value = value.strip('"')
             if runcommand:
@@ -254,16 +254,28 @@ def handle_if(stack, variables, command, translated, indent, runcommand):
     if_match = re.match(r'^if \((.*)\)$', command)
     if if_match:
         translated.append("    " * indent + "if stack.pop():")
-    if if_match and not runcommand:
-        inner_commands = if_match.group(1).split(',')
-        for cmd in inner_commands:
-            parser(stack, variables, cmd.strip(), translated, indent + 1, runcommand)
-    # run in live mode
-    elif if_match and runcommand:
-        inner_commands = if_match.group(1).split(',')
-        run = stack.pop()
-        for cmd in inner_commands:
-            parser(stack, variables, cmd.strip(), translated, indent + 1, run)
+        inner_command_string = if_match.group(1)
+        inner_commands = if_nesting_helper(inner_command_string)
+        if not runcommand:
+            for cmd in inner_commands:
+                parser(stack, variables, cmd.strip(), translated, indent + 1, runcommand)
+        elif runcommand:
+            run = stack.pop()
+            for cmd in inner_commands:
+                parser(stack, variables, cmd.strip(), translated, indent + 1, run)
+
+def if_nesting_helper(command_string):
+    #regex expression for nesting ifs bases on our syntax
+    pattern = r'(?:[^,(]|\(.*?\))+'
+    commands = re.findall(pattern, command_string)
+    filtered_commands = []
+    for cmd in commands:
+        stripped_cmd = cmd.strip()
+        if stripped_cmd:
+            filtered_commands.append(stripped_cmd)
+
+    return filtered_commands
+
 
 
 def parser(stack, variables, command, translated, indent=0, runcommand=True):

@@ -1,0 +1,2 @@
+insert true
+if (insert true, if (insert "yes", print))
