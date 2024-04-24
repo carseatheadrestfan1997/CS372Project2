@@ -31,22 +31,22 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
         elif not runcommand:
             translated.append(indented_line + f"stack.append({value})")
         else:
-            if runcommand:
-                throw_error(f"Insertion error for value {value}.", stack, translated)
+            throw_error(f"Non-fatal insertion error for value {value}.", stack, translated)
     else:
         if runcommand:
-            throw_error("Insertion error.", stack, translated)
+            throw_error("Non-fatal insertion error.", stack, translated)
 
 def handle_print(stack, variables, command, translated, indented_line, runcommand):
     print_matcher = re.match(r'print (\w+)', command)
     if print_matcher:
         variable_name = print_matcher.group(1)
-        if variable_name in variables:
+        if runcommand and variable_name in variables:
             translated.append(indented_line + f"print({variable_name})")
-            if runcommand:
-                print('#', variables[variable_name])
+            print('#', variables[variable_name])
+        elif runcommand:
+            throw_error(f"Variable {variable_name} not found.", stack, translated)
         else:
-            throw_error(f"Variable {variable_name} not found.", stack, translated, kill=not runcommand)
+            translated.append(indented_line + f"print({variable_name})")
     elif stack:
         translated.append(indented_line + "print(stack[-1])")
         if runcommand:
@@ -364,8 +364,9 @@ def execute_commands(stack, variables, commands, translated, indent=0, runcomman
 # by default, does not kill the script
 def throw_error(errormsg, stack, translated, kill=False):
     print(f"ERROR!!! {errormsg}")
+    # translated.append(f"# ERROR!!! {errormsg}")
     if kill:
-        print(f"Last stack:\n{stack}\n")
+        # print(f"Last stack:\n{stack}\n")
         string = "\n".join(translated)
         print(f"Script up to this point:\n { string } \n")
         print("Killing interpreter...")
