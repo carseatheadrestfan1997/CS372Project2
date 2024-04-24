@@ -170,19 +170,21 @@ print
 remove
 
 insert true
-insert "Since the stack contains \/ at the top of the stack"
+insert "Since the stack contains __Whats below__  at the top of the stack"
 print
 remove
 print
 if (insert "this if statement ran", print, remove)
 insert false
-insert "Since the stack contains \/ at the top of the stack, an if statement will not run"
+insert "Since the stack contains __Whats below__ at the top of the stack, an if statement will not run"
 print
 remove
 print
 if (insert "this if statement ran", print, remove)
 
 insert "--- Nesting with stack = [T, T] ---"
+print
+remove
 insert true
 insert true
 if (insert "First layer", print, remove, if (insert "    Second Layer", print))
