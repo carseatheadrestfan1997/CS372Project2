@@ -4,6 +4,8 @@ stack = []
 
 arg1 = 5
 arg2 = 10
+# demonstrate basic insertion, removal, comparisons
+# call with two command line arguments of integers
 stack.append(arg1)
 stack.append(arg2)
 b = stack.pop()

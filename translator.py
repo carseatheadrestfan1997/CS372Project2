@@ -1,5 +1,3 @@
-# translates whatever this language is called into python
-
 import re
 import sys
 
@@ -17,7 +15,7 @@ def handle_insert(stack, variables, command, translated, indented_line, runcomma
         elif value in ['true', 'false']:
             if runcommand:
                 stack.append(value == 'true')
-            translated.append(indented_line + f"stack.append({value == 'true'})")
+            translated.append(indented_line + f"stack.append({value})")
         elif value.startswith('"') and value.endswith('"'):
             value = value.strip('"')
             if runcommand:
@@ -255,7 +253,7 @@ def handle_if(stack, variables, command, translated, indent, runcommand):
     if if_match:
         translated.append("    " * indent + "if stack.pop():")
         inner_command_string = if_match.group(1)
-        inner_commands = if_nesting_helper(inner_command_string)
+        inner_commands = extract_commands(inner_command_string)
         if not runcommand:
             for cmd in inner_commands:
                 parser(stack, variables, cmd.strip(), translated, indent + 1, runcommand)
@@ -264,8 +262,7 @@ def handle_if(stack, variables, command, translated, indent, runcommand):
             for cmd in inner_commands:
                 parser(stack, variables, cmd.strip(), translated, indent + 1, run)
 
-def if_nesting_helper(command_string):
-    #regex expression for nesting ifs bases on our syntax
+def extract_commands(command_string):
     pattern = r'(?:[^,(]|\(.*?\))+'
     commands = re.findall(pattern, command_string)
     filtered_commands = []
@@ -275,8 +272,6 @@ def if_nesting_helper(command_string):
             filtered_commands.append(stripped_cmd)
 
     return filtered_commands
-
-
 
 def parser(stack, variables, command, translated, indent=0, runcommand=True):
     indented_line = "    " * indent
@@ -453,4 +448,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
