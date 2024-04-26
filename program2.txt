@@ -1,5 +1,6 @@
-# demonstrate loops, if statments
-# call with 3 command line arguments, all ints
+# takes 3 command line arguments (a, b, m)
+# for numbers i from a to b, print i stars
+# calculate + print sum of all multiples of a or b that are below m
 
 insert 1
 assign i

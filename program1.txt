@@ -1,0 +1,91 @@
+# program 1: max, sum, diff, GCD, LCM
+# due to a limitation of loops in this language, calculating the GCD only works up to an arbitrary value.
+
+# MAX
+insert arg1
+insert arg2
+greaterthan
+if (insert arg1, insert "MAX:", print, remove, print, remove, insert false)
+insert arg2
+insert arg1
+greaterthan
+if (insert arg2, insert "MAX:", print, remove, print, remove)
+insert arg2
+insert arg1
+equalto 
+if (insert arg1, insert "EQUAL MAXES:", print, remove, print, remove)
+
+# SUM
+insert arg1
+insert arg2
+add
+insert "SUM:"
+print
+remove
+print
+remove
+
+# DIFF
+insert arg1
+insert arg2
+subtract
+insert "DIFF:"
+print
+remove
+print
+remove
+
+# PRODUCT
+insert arg1
+insert arg2
+multiply
+insert "PRODUCT:"
+print
+remove
+print
+remove
+
+# GCD
+insert "GCD:"
+print
+
+insert arg1
+insert arg2
+greaterthan
+if (insert arg1, assign gcda, insert arg2, assign gcdb, insert false)
+if (insert arg2, assign gcda, insert arg1, assign gcdb)
+
+insert gcda
+assign greater
+insert 1
+assign x
+insert 1
+assign gcd
+
+loop 500
+insert greater
+insert x
+modulus
+insert 0
+equalto
+if (insert gcdb, insert x, modulus, insert 0, equalto, if (insert x, assign gcd))
+
+insert x
+insert 1
+add
+assign x
+
+
+endloop
+
+print gcd
+
+insert "LCM:"
+print
+
+insert arg1
+insert arg2
+multiply
+insert gcd
+divide
+print
